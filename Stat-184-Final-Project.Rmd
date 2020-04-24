@@ -1,0 +1,72 @@
+---
+title: "STAT 184 Final Project"
+author: "Tzu Hsiang Yeh"
+output: html_notebook
+---
+
+##Importing first dataset: Salaries.csv
+
+```{r}
+download.file(url="https://vincentarelbundock.github.io/Rdatasets/csv/carData/Salaries.csv",
+              destfile = "Salaries.csv")
+Salaries <- read.csv("Salaries.csv")
+```
+
+
+###What is the average salary of each rank?
+
+```{r}
+AvgSalaries <- ##(F) .Rmd Line number(s) for use of user-defined functions:
+  Salaries %>%
+  group_by(rank) %>% ##(A) .Rmd Line number(s) for general data wrangling:
+  summarise(Average_Salary = mean(salary)) ##(E) .Rmd Line number(s) for use of reduction and/or transformation functions:
+
+AvgSalaries
+```
+
+###What is the years of service of each rank?
+
+```{r}
+Salaries %>%
+  ggplot(aes(y = yrs.service, x = rank)) + 
+  geom_boxplot(aes(fill = rank), ##(B) .Rmd Line number(s) for use of multiple aesthetics:
+               position = position_dodge(width = 0.8), 
+               outlier.size = 1, alpha = 0.75)
+```
+
+###What is each individual's salary (seperated by sex)
+
+```{r}
+Salaries %>%
+  ggplot(aes(x = yrs.service, y=salary, color = sex)) + ##(C) .Rmd Line number(s) for use of layered graphics:
+  geom_point() +
+  geom_smooth(method = "lm") + ##(A) .Rmd Line number(s) for use of mulitple different geoms:
+  facet_wrap(~sex)
+```
+
+##Importing second dataset: Students_TA
+
+```{r}
+Students = read.csv("Students_TA.csv", header=TRUE)
+##(A) .Rmd Line numbers where at least two different data sources are imported:
+```
+
+###What are the names contains the string 'Sky'?
+
+```{r}
+Students %>%
+  filter(grepl("Sky", Full.Name, ignore.case = TRUE)) ##(D) .Rmd Line number(s) for use of regular expressions:
+```
+
+###What is the highest exam score of each course?
+
+```{r}
+Exam_1_Grades <-
+  Students %>%
+  group_by(Courses.1) %>%
+  summarise(Max = max(Course.1.EXAM_Grade)) %>%
+  spread(Courses.1, Max) ##(C) .Rmd Line number(s) for a spread or gather operation (or equivalent):
+
+Exam_1_Grades
+```
+
